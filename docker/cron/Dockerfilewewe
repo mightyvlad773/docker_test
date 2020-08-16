@@ -1,0 +1,31 @@
+FROM yiisoftware/yii2-php:7.3-fpm
+
+RUN apt-get clean && apt-get update
+
+ENV TZ=Europe/Moscow
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+COPY config/base.ini  /usr/local/etc/php/conf.d/base.ini
+
+
+RUN apt-get -y install libssl-dev
+
+RUN pecl channel-update pecl.php.net
+
+RUN pecl install raphf  && docker-php-ext-enable raphf
+
+RUN pecl install propro && docker-php-ext-enable propro
+
+RUN pecl install pecl_http  && docker-php-ext-enable http
+
+
+ADD crontab /var/spool/cron/crontabs/root
+ 
+RUN chmod 0644 /var/spool/cron/crontabs/root
+ 
+RUN touch /var/log/crm-cron.log
+ 
+RUN apt-get -y install cron
+ 
+CMD cron && tail -f /var/log/crm-cron.log
+
+WORKDIR /app

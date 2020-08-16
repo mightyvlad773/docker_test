@@ -1,0 +1,2 @@
+* * * * * root cd /app/bin && /usr/local/bin/php console GenerateSitemap 2> /var/log/cron.log
+* * * * * root date >> /var/log/test-cron.log

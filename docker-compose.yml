@@ -1,0 +1,50 @@
+version: "3.3"
+
+networks:
+  app-network:
+    driver: bridge
+
+services:
+
+  nginx:
+    build: ./docker/nginx
+    restart: always
+    volumes:
+      - ./src:/app:rw
+    ports:
+      - "8150:80"
+    networks:
+      - app-network
+  
+  php:
+    build: ./docker/php
+    restart: always
+    volumes:
+      - ./src:/app:rw
+    networks:
+      - app-network
+
+  mysql:
+    image: mysql:5.7
+    restart: always
+    ports:
+      - "3400:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: example_test_task
+      MYSQL_DATABASE: taskbase
+    networks:
+      - app-network
+
+  cron:
+    build: ./docker/cron
+    restart: always
+    networks:
+      - app-network
+    volumes:
+      - ./src:/app:rw
+
+  redis:
+    image: redis:6.0.6
+    restart: always
+    networks:
+      - app-network
